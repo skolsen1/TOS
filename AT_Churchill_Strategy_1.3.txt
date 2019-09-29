@@ -14,10 +14,10 @@
 # Added input option to trade Gann 25 level
 # Backtesting was not working - cleaned up the trade logic
 
-# 09/28/19 - SKO = v1.3
+# 09/29/19 - SKO = v1.3
 # Trade logic has been reworked
 # Backtesting now works over multiple days
-# Variable input for Gann height
+# Variable inputs for Gann height, tick profit, and tick loss
 # Ability to turn Gann and Fib lines on/off
 # Ability to turn debugging varaibles on/off
 
@@ -28,6 +28,8 @@ input startTime = 0200; #hint startTime: When to start computing Highs/Low and G
 input tradeTime = 0800; #hint tradeTime: When to start looking for trades.  Based on EST.
 input endTime = 1300;   #hint endTime: When to stop trades and comutations.  Based on EST.
 input contracts = 1;    #hint contracts: Number of contracts in one trade.
+input tickProfit = 4;   #hint tickProfit: How many ticks until profit is taken.
+input tickLoss = 16;    #hint tickLoss: How many ticks until loss is taken.
 input GHeight = 7;      #hint GHeight: Height of Gann levels before a trade can be taken.
 input tradeGann25 = no; #hint tradeGann25: Option to trade the Gann 25 level.
 input showGann = yes;   #hint showGann: Option to display Gann levels.
@@ -126,16 +128,16 @@ AddOrder(OrderType.SELL_TO_OPEN, openShortCondition, close, contracts, Color.RED
 # Close Long Order
 #
 def closeLongCondition = 
-    (close >= EntryPrice() + (4 * tickSize) or
-    close <= EntryPrice() - (16 * tickSize) or 
+    (close >= EntryPrice() + (tickProfit * tickSize) or
+    close <= EntryPrice() - (tickLoss * tickSize) or 
     SecondsTillTime(endTime) == 0);
 AddOrder(OrderType.SELL_TO_CLOSE, closeLongCondition, close, contracts, Color.RED, Color.RED, "Close Long");
 #
 # Close Short Order
 #
 def closeShortCondition = 
-    (close <= EntryPrice() - (4 * tickSize) or
-    close >= EntryPrice() + (16 * tickSize) or 
+    (close <= EntryPrice() - (tickProfit * tickSize) or
+    close >= EntryPrice() + (tickLoss * tickSize) or 
     SecondsTillTime(endTime) == 0);
 AddOrder(OrderType.BUY_TO_CLOSE, closeShortCondition, close, contracts, Color.RED, Color.RED, "Close Short");
 #
