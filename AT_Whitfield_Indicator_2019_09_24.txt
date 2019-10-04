@@ -1,0 +1,156 @@
+# By Jim Whitfield
+# Intended to be used on the /ZB and on a 5 min chart
+# In support of the daytrading by Ken
+
+# wish list
+# Update the Average to fit ABQ45 defined Average range
+# Add in Hammer/inverted hammer, piercingLine, morningstar (evening star?),
+#     three white soldiers (http://abq45.com/Traders/T101_Candles.jpg)
+#        using the Auto code from TOS?
+#     and on fractial highs and lows (for respective direction)
+#     and add in alert
+# Add Floor traders R/S
+# How to deal with small range days and are these computed for finished candles only?
+#     Namely, could one get an entry and the same candle as an extreme candle?
+
+# **** Update record ****
+# 8/5 - experiment with gettime
+# 8/6 - added in average rangeBands 
+#     - display average in tics
+# 8/7 - Wish: Add in alerts for new highs, lows, or retracements 
+# 8/9 - Add in moving alerts for new high, lows
+# 9/24 - added a premarket range threshold (can trade at 25% if Larger than..)
+
+AddLabel(yes, "V07b");
+def agg = AggregationPeriod.DAY;
+AddLabel(yes, GetSymbol());
+#AddLabel(yes, GetDay());
+
+input MinRange4Profit = 7;
+input MinPreMarketBrkOut = 28;
+input ShowRetraceLevels = yes; # change to GannLevels 9/24
+input ShowBands = no;
+input DaysBack = 0;
+input ticSize = 32;
+# 8/9 - 
+input AlertsOn = yes;
+
+# compute last few days average
+# Needs to be up dated to fit ABQ45 'Average'
+def AvgRange = (high(GetSymbol(), agg)[3] + high(GetSymbol(), agg)[2] + high(GetSymbol(), agg)[1] 
+             - (low (GetSymbol(), agg)[3] + low (GetSymbol(), agg)[2] + low (GetSymbol(), agg)[1])) / 3;
+#AddLabel(yes, (high(GetSymbol(),agg)[3] + "," + low(GetSymbol(),agg)[3]) + "," + (high(GetSymbol(),agg)[3] - low(GetSymbol(),agg)[3])*ticSize);
+#AddLabel(yes, (high(GetSymbol(),agg)[2] + "," + low(GetSymbol(),agg)[2]) + "," + (high(GetSymbol(),agg)[2] - low(GetSymbol(),agg)[2])*ticSize);
+#AddLabel(yes, (high(GetSymbol(),agg)[1] + "," + low(GetSymbol(),agg)[1]) + "," + (high(GetSymbol(),agg)[1] - low(GetSymbol(),agg)[1])*ticSize);
+#AddLabel(yes, "3-days Back AVG Range: "+Floor(AvgRange) + "'" + (Floor(ticSize * AvgRange) - ticSize * Floor(AvgRange)));
+AddLabel(yes, "3-days Back AVG Range: " + Floor(ticSize * AvgRange) + " tics");
+
+
+input monitor_start = 0200;
+input market_start = 0800;
+input market_end = 1500;
+
+#High and low since start of monitor_start start
+def hh = if SecondsFromTime(monitor_start) == 0 && SecondsTillTime(market_end) >= 0 
+             then high 
+         else if high > hh[1] 
+             then high 
+         else hh[1];
+
+def ll = if SecondsFromTime(monitor_start) == 0 && SecondsTillTime(market_end) >= 0 
+             then low 
+         else if low < ll[1] 
+             then low 
+         else ll[1];
+
+#Label current range since Monitor
+AddLabel(yes, "high: " + Floor(hh) + "'" + (Floor(ticSize * ((hh))) - ticSize * Floor(hh)));
+AddLabel(yes, "low: "  + Floor(ll) + "'" + (Floor(ticSize * ((ll))) - ticSize * Floor(ll)));
+
+def hh_monitor = 
+        if SecondsFromTime(monitor_start) < 0 
+            then 0
+        else if hh_monitor[1] == 0
+            then high
+        else if SecondsFromTime(market_start) < 0 && hh_monitor[1] <= high
+            then high
+        else hh_monitor[1];
+def ll_monitor = 
+        if SecondsFromTime(monitor_start) < 0 
+            then 0
+        else if ll_monitor[1] == 0
+            then low
+        else if SecondsFromTime(market_start) < 0 && ll_monitor[1] >= low
+            then low
+        else ll_monitor[1];
+
+#Label premarket range and bigger than MinPreMarketBrkOut
+#AddLabel(yes, "Pre: "
+#  +  Floor(hh_monitor) + "'" + (Floor(ticSize * ((hh_monitor))) - ticSize * Floor(hh_monitor))
+#  + " " 
+#  +  Floor(ll_monitor) + "'" + (Floor(ticSize * ((ll_monitor))) - ticSize * Floor(ll_monitor))
+#    );
+AddLabel(yes, "Pre_Range: "
+  +  (hh_monitor - ll_monitor)*ticSize, 
+    if (hh_monitor - ll_monitor) * ticSize >= MinPreMarketBrkOut then Color.GREEN else Color.RED );
+
+#Alerts for New extreme?
+def new_hh = Crosses(hh, hh[1], CrossingDirection.ABOVE);
+def new_ll = Crosses(ll, ll[1], CrossingDirection.ABOVE);
+Alert((high > hh[1]), "New HH", Alert.BAR, Sound.Ring);
+Alert(low  < ll[1], "New LL", Alert.BAR, Sound.Ring);
+#alert((new_hh > hh[1] and AlertsOn = yes), "New HH", Alert.BAR, sound.ring);
+#alert(new_ll < ll[1] and  AlertsOn = yes, "New LL", Alert.BAR, sound.ring);
+
+#plot the daily highs and lows
+plot h_ = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) then hh else Double.NaN;
+plot l_ = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) then ll else Double.NaN;
+
+#Show Retracement levels
+plot datamid = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowRetraceLevels == yes
+     then (hh + ll) / 2 else Double.NaN;
+plot data75  = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowRetraceLevels == yes
+     then (3 * hh + ll) / 4 else Double.NaN;
+plot data25  = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowRetraceLevels == yes
+     then (  hh + 3 * ll) / 4 else Double.NaN;
+#Set line properties for retracement lines
+datamid.SetStyle(Curve.SHORT_DASH);
+datamid.SetLineWeight(1);
+data75.SetStyle(Curve.SHORT_DASH);
+data75.SetLineWeight(1);
+data25.SetStyle(Curve.SHORT_DASH);
+data25.SetLineWeight(1);
+
+#Show retracement bands if selected
+plot datamid_floor = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowBands == yes
+                         && ShowRetraceLevels == yes
+                    then Floor(ticSize * ((hh + ll) / 2)) / ticSize else Double.NaN;
+plot datamid_ceil = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowBands == yes
+                         && ShowRetraceLevels == yes
+                    then  Ceil(ticSize * ((hh + ll) / 2)) / ticSize  else Double.NaN;
+
+plot data75_floor = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowBands == yes
+                         && ShowRetraceLevels == yes
+                    then Floor(ticSize * ((3 * hh + ll) / 4)) / ticSize else Double.NaN;
+plot data75_ceil = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowBands == yes
+                         && ShowRetraceLevels == yes
+                    then  Ceil(ticSize * ((3 * hh + ll) / 4)) / ticSize  else Double.NaN;
+
+plot data25_floor = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) && ShowBands == yes
+                         && ShowRetraceLevels == yes
+                    then Floor(ticSize * 2 * ((hh + 3 * ll) / 8)) / ticSize else Double.NaN;
+plot data25_ceil = if (SecondsFromTime(monitor_start) >= 0 && GetLastDay() <= GetDay() + DaysBack) 
+                       && ShowBands == yes  && ShowRetraceLevels == yes
+                    then  Ceil(ticSize * 2 * ((hh + 3 * ll) / 8)) / ticSize  else Double.NaN;
+
+
+AddCloud(datamid_floor, datamid_ceil);
+AddCloud(data75_floor, data75_ceil);
+AddCloud(data25_floor, data25_ceil);
+
+#Show if trading range is large enough for each retracement level
+AddLabel(yes, "MinRange4Profit: " + MinRange4Profit, Color.BLUE);
+AddLabel(yes, "Ranges: 100% " + (hh - ll) * ticSize, if (hh - ll) * ticSize >= MinRange4Profit then Color.GREEN else Color.RED );
+AddLabel(yes, "75%: " + (hh - ll) * (ticSize * 3 / 4), if (hh - ll) * ticSize * 3 / 4 >= MinRange4Profit then Color.GREEN else Color.RED );
+AddLabel(yes, "50%: " + (hh - ll) * (ticSize / 2), if (hh - ll) * ticSize / 2 >= MinRange4Profit then Color.GREEN else Color.RED );
+AddLabel(yes, "25%: " + (hh - ll) * (ticSize / 4), if (hh - ll) * ticSize / 4 >= MinRange4Profit then Color.GREEN else Color.RED );
