@@ -1,0 +1,82 @@
+# Linear Reg Std Deviation Channel
+# TD Ameritrade IP Company, Inc. (c) 2009-2019
+#
+# Modified by Larry Verble
+
+# Hint:  Consider price near or exceeding 2xSD as a possible reversal point
+# when near support or resistance levels.
+
+input price = close;
+input deviation1 = 1.0;
+input deviation2 = 2.0;
+input deviation3 =3.0;
+input fullRange = No;
+input length = 72;
+
+def regression;
+def stdDeviation;
+if (fullRange) {
+    regression = InertiaAll(price);
+    stdDeviation = stdevAll(price);
+} else {
+    regression = InertiaAll(price, length);
+    stdDeviation = stdevAll(price, length);
+}
+
+#plot regression line
+plot MiddleLine = regression;
+
+#plot StdDeviation Lines, 1, 2, & 3
+plot UpperLine1 = regression + deviation1 * stdDeviation;
+plot LowerLine1 = regression - deviation1 * stdDeviation;
+
+plot UpperLine2 = regression + deviation2 * stdDeviation;
+plot LowerLine2= regression - deviation2 * stdDeviation;
+
+plot UpperLine3 = regression + deviation3 * stdDeviation;
+plot LowerLine3= regression - deviation3 * stdDeviation;
+
+#determine width of +/- 2 StdDeviation 
+def Dif2 = Round(UpperLine2 - LowerLine2,2);
+
+#add labels
+AddLabel(yes, Concat(” 1*SD=”, Round(0.25*Dif2,2)), Color.YELLOW);
+AddLabel(yes, Concat(” 2*SD=”, Round(0.5*Dif2,2)), Color.PINK);
+AddLabel(yes, Concat(” 4*SD=”, Round(Dif2,2)), Color.YELLOW);
+
+#determine ratio of 2xStdDeviation/Price; useful for determining volitility of stocks
+AddLabel(yes, Concat( Round(100*Dif2/price,2),”% Max 2x StdDev/Price”), Color.WHITE);
+
+#Set Color of regression line based on slope
+MiddleLine.assignValueColor(if MiddleLine>MiddleLine[1] then color.green else color.red);
+MiddleLine.setLineWeight(3);
+
+#Set color and curve style of SteDeviation Lines
+UpperLine1.SetDefaultColor(GetColor(8));
+LowerLine1.SetDefaultColor(GetColor(8));
+UpperLine2.SetDefaultColor(GetColor(8));
+LowerLine2.SetDefaultColor(GetColor(8));
+UpperLine3.AssignValueColor(Color.gray);
+LowerLine3.AssignValueColor(Color.gray);
+UpperLine3.SetStyle(Curve.Short_Dash);
+LowerLine3.SetStyle(Curve.Short_Dash);
+
+
+#Add cloud between 1 & 2 StdDeviation Lines
+AddCloud (UpperLine2,UpperLine1,color.Pink,color.Pink);
+AddCloud (LowerLine2,LowerLine1,color.Lime,color.lime);
+
+#determine where price is as percentage of StdDeviation level
+def Percent = Round(((price - MiddleLine)/(UpperLine2[1]-MiddleLine))*100,1);
+def Max = UpperLine2 - LowerLine2;
+AddLabel(yes, Concat( Round(Percent,2),”% of Max 2x StdDev  ”), Color.Light_Red);
+
+
+
+
+
+
+
+
+
+
