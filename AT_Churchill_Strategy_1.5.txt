@@ -3,7 +3,7 @@
 # Created 09/24/19 by Scott Olsen
 # Questions?  Please contact me at: solsen@tdigital.com
 #
-# Version 1.5
+# Version 1.4
 #
 # Version History
 # 09/25/19 - SKO - v1.1
@@ -64,7 +64,7 @@ def na = Double.NaN;
 def tickSize = TickSize();
 def barNumber = BarNumber();
 def tradeCount = GetQuantity();
-def isActive = if SecondsFromTime(startTime) >= 0 and SecondsTillTime(endTime) > 0 then 1 else 0;
+def isActive = if SecondsFromTime(startTime) >= 0 and SecondsTillTime(endTime) >= 0 then 1 else 0;
 def period = GetAggregationPeriod() / 60000;
 def trend = {default undefined, up, down};
 
@@ -78,13 +78,11 @@ def trend = {default undefined, up, down};
 # trend - set trend based on bar number of low and high
 #
 def activeHigh = if isActive then if high > activeHigh[1] then high else activeHigh[1] else high;
-def activeLow = if isActive then if low < activeLow[1] then low else activeLow[1] else low;
-def lowBar = if isActive and low == activeLow then barNumber else lowBar[1];
-def highBar = if isActive and high == activeHigh then barNumber else highBar[1];
+def activeLow = if isActive then if low < activeLow[1] then low else activeLow[1] else  low;
+def lowBar = if isActive and low < activeLow[1] then barNumber else lowBar[1];
+def highBar = if isActive and high > activeHigh[1] then barNumber else highBar[1];
 def startBar = if SecondsFromTime(tradeTime) == 0 then barNumber else startBar[1];
-trend = if lowBar < highBar then trend.up else if lowBar > highBar then trend.down else trend.undefined;
-def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0 and (lowBar >= startBar or highBar >= startBar);
-#def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0;
+trend = if lowBar < highBar then trend.up else if lowBar > highBar then trend.down else if lowBar[1] < highBar[1] then trend.up else if lowBar[1] > highBar[1] then trend.down else trend.undefined;
 
 #
 # Define Gann Levels
@@ -92,13 +90,23 @@ def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0 
 def G25 =  activeLow + ((activeHigh - activeLow) * 0.25);
 def G50 =  activeLow + ((activeHigh - activeLow) * 0.50);
 def G75 =  activeLow + ((activeHigh - activeLow) * 0.75);
-def currentGHeight =  RoundUp(0.25 * (activeHigh - activeLow) / tickSize, 0);
+def currentGHeight =  RoundUp(0.25 * (activeHigh - activeLow) / tickSize, 2);
 
 #
 # Define Fib Levels
 # Sets the .382 and .618 Fib levels
 def FibLow = activeLow + ((activeHigh - activeLow) * 0.382);
 def FibHigh = activeLow + ((activeHigh - activeLow) * 0.618);
+
+#
+# See if trade is within time frame and Gann height is OK
+#
+# Uncomment this definition if you want to start
+# trading after a new high/low has been made.
+#
+#def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0 and (lowBar >= startBar or highBar >= startBar) and currentGHeight >= GHeight;
+
+def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0 and currentGHeight >= GHeight;
 
 #
 # See if Gann Levels have been touched
@@ -129,9 +137,13 @@ def G75Hit = CompoundValue(1, if canTrade and (lowBar > startBar or highBar > st
 #
 # Check Gann level height and crossing
 #
-def tradeLongOK = trend == trend.up and ((tradeGann25 and close crosses below G75 and (activeHigh - G75) / tickSize >= GHeight) or (close crosses below G50 and (activeHigh - G50) / tickSize >= GHeight) or (close crosses below G25 and (activeHigh - G25) / tickSize >= GHeight));
+#def tradeLongOK = trend == trend.up and ((tradeGann25 and close crosses below G75 and (activeHigh - G75) / tickSize >= GHeight) or (close crosses below G50 and (activeHigh - G50) / tickSize >= GHeight) or (close crosses below G25 and (activeHigh - G25) / tickSize >= GHeight));
 
-def tradeShortOK = trend == trend.down and ((tradeGann25 and close crosses above G25 and (G25 - activeLow) / tickSize >= GHeight) or (close crosses above G50 and (G50 - activeLow) / tickSize >= GHeight) or (close crosses above G75 and (G75 - activeLow) / tickSize >= GHeight));
+#def tradeShortOK = trend == trend.down and ((tradeGann25 and close crosses above G25 and (G25 - activeLow) / tickSize >= GHeight) or (close crosses above G50 and (G50 - activeLow) / tickSize >= GHeight) or (close crosses above G75 and (G75 - activeLow) / tickSize >= GHeight));
+
+def tradeLongOK = trend == trend.up and ((tradeGann25 and close crosses below G75) or close crosses below G50 or close crosses below G25);
+
+def tradeShortOK = trend == trend.down and ((tradeGann25 and close crosses above G25) or close crosses above G50 or close crosses above G75);
 
 #
 # Open Long Order
@@ -165,8 +177,8 @@ AddOrder(OrderType.BUY_TO_CLOSE, closeShortCondition, close, contracts, Color.RE
 # Option to turn off through input parameters
 #
 AddLabel(yes, GetSymbol());
-AddLabel(yes, "1/4 Range: " + currentGHeight, if currentGHeight >= GHeight then Color.GREEN else Color.RED);
-AddLabel(yes, "Trend: " + if trend == trend.up then "Up" else "Down", if trend == trend.up then Color.GREEN else Color.RED);
+AddLabel(yes, "1/4 Range: " + if isActive then AsText(currentGHeight) else "N/A", if isActive and currentGHeight >= GHeight then Color.GREEN else Color.RED);
+AddLabel(yes, "Trend: " + if isActive then if trend == trend.up then "Up" else if trend == trend.down then "Down" else "?" else "N/A", if isActive then if trend == trend.up then Color.GREEN else if trend == trend.down then Color.RED else Color.GRAY else Color.RED);
 AddLabel(yes, "Can Trade: " + if canTrade then "Yes" else "No", if canTrade then Color.GREEN else Color.RED);
 AddLabel(showDebug, "Active: " + if isActive then "Yes" else "No", Color.CYAN);
 AddLabel(showDebug, "Low: " + Floor(activeLow) + "'" + (activeLow - Floor(activeLow)) / tickSize, Color.CYAN);
@@ -217,9 +229,9 @@ AddVerticalLine(showVLines and SecondsTillTime(0820) == 0 and SecondsFromTime(08
 #
 AddVerticalLine(showVLines and SecondsTillTime(0930) == 0 and SecondsFromTime(0930) == 0, "STKS OPEN", Color.LIGHT_GRAY, Curve.LONG_DASH);
 #
-AddVerticalLine(showVLines and SecondsTillTime(0800) == 0 and SecondsFromTime(0800) == 0, "START", Color.LIME, Curve.LONG_DASH);
+AddVerticalLine(showVLines and SecondsTillTime(tradeTime) == 0 and SecondsFromTime(tradeTime) == 0, "START", Color.LIME, Curve.LONG_DASH);
 #
-AddVerticalLine(showVLines and SecondsTillTime(1300) == 0 and SecondsFromTime(1300) == 0, "END", Color.PINK, Curve.LONG_DASH);
+AddVerticalLine(showVLines and SecondsTillTime(endTime) == 0 and SecondsFromTime(endTime) == 0, "END", Color.PINK, Curve.LONG_DASH);
 #
 AddVerticalLine(showVLines and SecondsTillTime(1500) == 0 and SecondsFromTime(1500) == 0, "/ZB CLOSE", Color.LIGHT_GRAY, Curve.LONG_DASH);
 #
