@@ -1,5 +1,10 @@
 # TOS
-Area for people to share ThinkorSwim scripts
+Area to share ThinkorSwim scripts<br><br>
+To download, there are two options:<br>
+<ul>
+  <li>Download all files: Click on the green <b>Clone or download</b> button and then click <b>Download ZIP</b>.  This will download the complete ThinkorSwim files and script into a ZIP file which you can save on to your hard drive.</li>
+  <li>Open an individual file: Click on the file name you are interested in and then click the <b>Raw</b> button.  This will open a version that is clean of html and you can CTRL-A to select all and then copy and paste into TOS.</li>
+</ul>
 
 <b>AT_Churchill_Strategy_x.x.txt</b><br>
 Strategy based on concepts by Ken Churchill.  User inputs with options to adjust your trade times; number of contracts; number of ticks for profit/loss; adjust Gann height; display Gann, fib, and vertical event lines; trade the Gann 25 level; and debugging values in case you want to modify the code.<br><br>
