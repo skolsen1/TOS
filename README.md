@@ -21,7 +21,7 @@ Strategy based on concepts by Ken Churchill.  User inputs with options to adjust
 <p>I find that VWAP charts in TOS work best for intra-day activity, but it looks like the standard TOS study also facilitates calculating VWAP on daily, weekly, and monthly candles.</p>
 
 <p><a href="https://www.youtube.com/watch?v=U0uftXzvUZU" target="_blank">YouTube videos on VWAP</a></p>
-<br><br>
+
 <b>AT_Verble_LinearRegStdDevChannel_Study.txt</b><br>
 Modification of the TOS Std Dev Channel indicator<br><br>
 <b>AT_Whitfield_Study_2019_09_24.txt</b><br>
