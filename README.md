@@ -8,6 +8,20 @@ To download, there are two options:<br><br>
 <hr>
 <b>AT_Churchill_Strategy_x.x.txt</b><br>
 Strategy based on concepts by Ken Churchill.  User inputs with options to adjust your trade times; number of contracts; number of ticks for profit/loss; adjust Gann height; display Gann, fib, and vertical event lines; trade the Gann 25 level; and debugging values in case you want to modify the code.<br><br>
+<b>AT_Sarago_VWAP_Study.txt</b><br>
+<i>Musings on VWAP</i> from Mark:
+<p>Some traders use VWAP as their primary indicator as it is used by large institutional bond buy-sell brokers to determine if they are selling/buying at a responsible bond price.  The big brokers want to buy bonds below the VWAP and to sell them above the VWAP.  When they do their clients are happy that a "good deal" has been made.</p>
+
+<p>I use it as purely a confirmation indicator (not primary) or simply as a reference since it acts very much like Bollinger bands.  Note that it is a bit different from Bollinger bands, however, in that it has the added advantage of incorporating volume of contracts or shares traded into the calculation.  This is a great addition.</p>
+
+<p>Like Bollinger bands, if price action walks the bands or moves to the extremes outside the bands, it suggests that price will reverse back to the mean.  It is also interesting that on most days, the price action in the final few hours before normal market close, price action tends to move toward the VWAP mean.</p>
+
+<p>As Larry correctly states, when price action is above the VWAP mean, you should emphasize an up-trend in your decisions, but when prices rise above the the VWAP's cloud top line you should expect a pull back that might be either slight or massive.  The reverse is also true for price action below the VWAP mean.</p>
+
+<p>I find that VWAP charts in TOS work best for intra-day activity, but it looks like the standard TOS study also facilitates calculating VWAP on daily, weekly, and monthly candles.</p>
+
+<p><a href="https://www.youtube.com/watch?v=U0uftXzvUZU" target="_blank">YouTube videos on VWAP</a></p>
+<br><br>
 <b>AT_Verble_LinearRegStdDevChannel_Study.txt</b><br>
 Modification of the TOS Std Dev Channel indicator<br><br>
 <b>AT_Whitfield_Study_2019_09_24.txt</b><br>
