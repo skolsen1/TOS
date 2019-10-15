@@ -70,13 +70,3 @@ AddCloud (LowerLine2,LowerLine1,color.Lime,color.lime);
 def Percent = Round(((price - MiddleLine)/(UpperLine2[1]-MiddleLine))*100,1);
 def Max = UpperLine2 - LowerLine2;
 AddLabel(yes, Concat( Round(Percent,2),”% of Max 2x StdDev  ”), Color.Light_Red);
-
-
-
-
-
-
-
-
-
-
