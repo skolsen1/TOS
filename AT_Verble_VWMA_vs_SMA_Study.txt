@@ -1,0 +1,73 @@
+# AT_Verble_VWMA_vs_SMA 
+# TD Ameritrade IP Company, Inc. (c) 2017-2019 
+# 
+# TDA code modified and revised by Larry Verble 
+declare lower; 
+input price = close; 
+#Hint: Set smaLength and vwmaLength to different values, generally with smaLength > vwmaLength 
+#Hint: Suggested values to use for smaLength and vwmaLength are nearest neighbors from the Fibonacci sequence. 
+input smaLength = 34; 
+input vwmaLength = 21; 
+# 
+#Hint: This study seems to work best with Simple Moving Average of Price 
+input averageType = AverageType.SIMPLE; 
+input crossarrowsize = 3; 
+input showcrossarrows = yes; 
+# 
+#Plot Simple Moving Average and colorize based on MA slope 
+plot MA = MovingAverage(averageType, price, smaLength); 
+MA.AssignValueColor(if MA > MA[1] then Color.GREEN else Color. RED); 
+MA.SetLineWeight(3); 
+# 
+#Plot Volume Weighted Moving Average and colorize based on VWMA slope 
+plot VWMA = Sum(volume * price, vwmaLength) / Sum(volume, vwmaLength); 
+VWMA.AssignValueColor(if VWMA > VWMA[1] then Color.GREEN else Color. RED); 
+VWMA.SetLineWeight(3); 
+VWMA.SetPaintingStrategy(PaintingStrategy.LINE_VS_POINTS); 
+# 
+#Add Cloud between VWMA and MA 
+AddCloud(VWMA, MA, Color.GREEN, Color.RED); 
+# ========================================================= 
+#Determine Crossings and Draw Arrows 
+rec FinalArrowStatus = CompoundValue(1, 
+# U2: VWMA cross up and over MA 
+if VWMA[0] > MA[0] and 
+VWMA[1] < MA[1] then 2 
+else 
+# D2: VWMA crossover down and below MA 
+if VWMA[0] < MA[0] and 
+VWMA[1] > MA[1] then -2 
+else 0, 0); 
+# ========================================================= 
+# AVG Status - either green or red 
+rec MAChangeStatus = CompoundValue(1, 
+if (MA[0] > MA[1]) and 
+(MAChangeStatus[1] <= 0) then 2 
+else 
+if (MA[0] < MA[1]) and 
+(MAChangeStatus[1] >= 2) then -2 
+else MAChangeStatus[1], 0); 
+# ========================================================= 
+# Plot arrows 
+plot VWMAUpArrow = 
+if showcrossarrows then 
+if FinalArrowStatus[0] == 
+FinalArrowStatus[1] then Double.NaN 
+else if FinalArrowStatus[0] == 2 then 
+MA - (MA * 0.00020) else Double.NaN 
+else Double.NaN; 
+VWMAUpArrow.SetPaintingStrategy(PaintingStrategy.ARROW_UP); 
+VWMAUpArrow.SetDefaultColor(Color.GREEN); 
+VWMAUpArrow.SetLineWeight(crossarrowsize); 
+# 
+plot VWMADownArrow = 
+if showcrossarrows then 
+if FinalArrowStatus[0] == 
+FinalArrowStatus[1] then Double.NaN 
+else if FinalArrowStatus[0] == -2 then 
+MA + (MA * 0.00020) else Double.NaN 
+else Double.NaN; 
+VWMADownArrow.SetPaintingStrategy(PaintingStrategy.ARROW_DOWN); 
+VWMADownArrow.SetDefaultColor(Color.RED); 
+VWMADownArrow.SetLineWeight(crossarrowsize); 
+# ========================================================= 
