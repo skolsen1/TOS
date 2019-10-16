@@ -24,6 +24,8 @@ Strategy based on concepts by Ken Churchill.  User inputs with options to adjust
 
 <b>AT_Verble_LinearRegStdDevChannel_Study.txt</b><br>
 Modification of the TOS Std Dev Channel indicator<br><br>
+<b>AT_Verble_VWMA_vs_SMA_Study.txt</b><br>
+In the lower panel, the solid line is a 34-period SMA, and the line with dots is a 21-period VWMA.  Arrows represent crossings of the two, and these crossings give a good early warning signal of where price seems to want to go.<br><br>
 <b>AT_Whitfield_Study_2019_09_24.txt</b><br>
 Original study that AT_Churchill_Strategy_x.x.txt is based off.  This study has the ability to alert you when there is a new high or low.<br><br>
 <b>KensYTDtrades.xlsx</b><br>
