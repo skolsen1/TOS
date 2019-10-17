@@ -1,0 +1,50 @@
+# AT_Verble_Auto_Gann_Levels
+#
+# Version 1.1
+#
+input start_time = 0200;
+input end_time = 1500;
+input ticsize = 32;
+def na = Double.NaN;
+AddLabel(yes, GetSymbol());
+#
+# Check if the active market time is now
+def MktActive = if GetLastDay() == GetDay() and SecondsFromTime(start_time) >= 0 and SecondsFromTime(end_time) < 0 then 1 else 0;
+#
+# Track the market high and low
+def MktHigh = if MktActive then high else na;
+def MktLow = if MktActive then low else na;
+#
+# Plot the active market high and low
+plot AMH = if GetLastDay() != GetDay() or !MktActive then na else HighestAll(MktHigh);
+plot AML = if GetLastDay() != GetDay() or !MktActive then na else LowestAll(MktLow);
+#
+#Set Colors and Line Weights
+AMH.SetDefaultColor(GetColor(4));
+AML.SetDefaultColor(GetColor(4));
+AMH.SetLineWeight(2);
+AML.SetLineWeight(2);
+#
+#Plot Gann Levels
+plot Gann75 = if GetLastDay() != GetDay() or !MktActive then na else ((AMH - AML) * 0.75) + AML;
+plot Gann50 = if GetLastDay() != GetDay() or !MktActive < 0 then na else ((AMH - AML) * 0.5) + AML;
+plot Gann25 = if GetLastDay() != GetDay() or !MktActive < 0 then na else ((AMH - AML) * 0.25) + AML;
+#
+#Plot Fib Levels
+plot Fib382 = if GetLastDay() != GetDay() or !MktActive < 0 then na else ((AMH - AML) * 0.382) + AML;
+plot Fib618 = if GetLastDay() != GetDay() or !MktActive < 0 then na else ((AMH - AML) * 0.618) + AML;
+#
+#Set Colors, Line Style, and Line Weight
+Gann75.SetDefaultColor(GetColor(4));
+Gann50.SetDefaultColor(GetColor(1));
+Gann25.SetDefaultColor(GetColor(4));
+Fib382.AssignValueColor(Color.gray);
+Fib382.SetStyle(Curve.SHORT_DASH);
+Fib618.AssignValueColor(Color.gray);
+Fib618.SetStyle(Curve.SHORT_DASH);
+#
+#Add Labels
+AddLabel(yes, "High: " + Floor(AMH) + "'" + (Floor(ticsize * ((AMH))) - ticsize * Floor(AMH)));
+AddLabel(yes, "Low: "  + Floor(AML) + "'" + (Floor(ticsize * ((AML))) - ticsize * Floor(AML)));
+AddLabel(yes, "Range: " + Floor(AMH - AML) + "'" + (Floor(ticsize * ((AMH - AML))) - ticsize * Floor(AMH - AML)));
+AddLabel(yes, "Quarter Range: " + Floor(.25 * (AMH - AML)) + "'" + (Floor(ticsize * (.25 * (AMH - AML))) - ticsize * Floor(.25 * (AMH - AML))));
