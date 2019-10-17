@@ -18,7 +18,7 @@ Strategy based on concepts by Ken Churchill.  User inputs with options to adjust
 <p>I find that VWAP charts in TOS work best for intra-day activity, but it looks like the standard TOS study also facilitates calculating VWAP on daily, weekly, and monthly candles.</p>
 <p><a href="https://www.youtube.com/watch?v=U0uftXzvUZU" target="_blank">YouTube videos on VWAP</a></p>
 
-<b>AT_Verble_Auto_Gann_Levels_1.1.txt</b><br>
+<b>AT_Verble_Auto_Gann_Levels_Study_1.1.txt</b><br>
 Larry's auto generation of Gann levels<br><br>
 
 <b>AT_Verble_LinearRegStdDevChannel_Study.txt</b><br>
