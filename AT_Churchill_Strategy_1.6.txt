@@ -1,0 +1,235 @@
+#
+# A trading strategy based on Ken Churchill's concepts
+# Created 09/24/19 by Scott Olsen
+# Questions?  Please contact me at: solsen@tdigital.com
+#
+# Version 1.6
+#
+# Version History
+# 09/25/19 - SKO - v1.1
+# Added condition to Gann hit counter to count after a new high/low is reached.
+# Changed color of labels so they can be distinguished from other indicators.
+#
+# 09/26/19 - SKO - v1.2
+# Added input option to trade Gann 25 level
+# Backtesting was not working - cleaned up the trade logic
+
+# 09/29/19 - SKO - v1.3
+# Trade logic has been reworked
+# Backtesting now works over multiple days
+# Variable inputs for Gann height, tick profit, and tick loss
+# Ability to turn Gann and Fib lines on/off
+# Ability to turn debugging varaibles on/off
+#
+# 09/30/19 - SKO - v1.4
+# Ability to turn vertical time event lines on/off
+# Add labels for symbol, 1/4 range, trend, and can trade
+#
+# 10/03/19 - SKO - v1.5
+# Updated Gann level height strategy
+# Require that the gap between the new high (or new low)
+# is a minimum of seven ticks from the entry price, 
+# whether entry is at the 25%, 50%, or 75% Gann level.
+# (This is a revised understand from Ken)
+# New high/low has to be after start (tradeTime)
+# Set default for debugging to NO
+# Add input for displaying trades (default = YES)
+# Remove redundant or not used debug labels
+#
+# 10/25/19 - SKO - v1.6
+# Added more of a descriptive Can Trade label.
+# Describes which levels can be traded based on the
+# height of the Gann levels.
+# Set tradeGann25 default to yes
+# Clean up unused code.
+#
+#hint: An automated trading strategy based on concepts by Ken Churchill.
+#
+input startTime = 0200; #hint startTime: When to start computing Highs/Low and Gann lines.  Based on EST.
+input tradeTime = 0800; #hint tradeTime: When to start looking for trades.  Based on EST.
+input endTime = 1300;   #hint endTime: When to stop trades and comutations.  Based on EST.
+input contracts = 1;    #hint contracts: Number of contracts in one trade.
+input tickProfit = 4;   #hint tickProfit: How many ticks until profit is taken.
+input tickLoss = 16;    #hint tickLoss: How many ticks until loss is taken.
+input GHeight = 7;      #hint GHeight: Height of Gann levels before a trade can be taken.
+input tradeGann25 = yes;#hint tradeGann25: Option to trade the Gann 25 level.
+input showGann = yes;   #hint showGann: Option to display Gann levels.
+input showFibs = yes;   #hint showFibs: Option to display Fib levels.
+input showVLines = yes; #hint showVLines: Option to display Vertical lines
+input showTrades = yes; #hint showTrades: Option to display back testing trades
+input showDebug = no;  #hint showDebug: Option to display debugging variables.
+#
+# Variable declaration
+# barNumber - used to determine trend. If High has a higher bar # than Low, then trend is UP
+# if Low has a higher bar # than High then trend is DOWN.
+# isActive - the time between startTime and endTime
+# period - current period of chart (5 min for example). Currently not used, but could be useful
+# trend - enumeration that defines the current trend
+def na = Double.NaN;
+def tickSize = TickSize();
+def barNumber = BarNumber();
+def isActive = SecondsFromTime(startTime) >= 0 and SecondsTillTime(endTime) > 0;
+def period = GetAggregationPeriod() / 60000;
+def trend = {default undefined, up, down};
+
+#
+# Define High / Low and Trend for Active Session
+# activeLow - low for timeframe between startTime and endTime
+# activeHigh - high for timeframe between startTime and endTime
+# lowBar - bar # of activeLow
+# highBar - bar # of activeHigh
+# startBar - bar # of the start of the trade session (canTrade)
+# trend - set trend based on bar number of low and high
+#
+def activeHigh = if isActive then if high > activeHigh[1] then high else activeHigh[1] else high;
+def activeLow = if isActive then if low < activeLow[1] then low else activeLow[1] else  low;
+def lowBar = if isActive and low < activeLow[1] then barNumber else lowBar[1];
+def highBar = if isActive and high > activeHigh[1] then barNumber else highBar[1];
+def startBar = if SecondsFromTime(tradeTime) == 0 then barNumber else startBar[1];
+trend = if lowBar < highBar then trend.up else if lowBar > highBar then trend.down else if lowBar[1] < highBar[1] then trend.up else if lowBar[1] > highBar[1] then trend.down else trend.undefined;
+
+#
+# Define Gann Levels
+# Sets the Gann 25, 50, and 75 levels.
+def G25 =  activeLow + ((activeHigh - activeLow) * 0.25);
+def G50 =  activeLow + ((activeHigh - activeLow) * 0.50);
+def G75 =  activeLow + ((activeHigh - activeLow) * 0.75);
+def currentGHeight =  RoundUp(0.25 * (activeHigh - activeLow) / tickSize, 2);
+
+#
+# Define Fib Levels
+# Sets the .382 and .618 Fib levels
+def FibLow = activeLow + ((activeHigh - activeLow) * 0.382);
+def FibHigh = activeLow + ((activeHigh - activeLow) * 0.618);
+
+#
+# See if it's time to trade between tradeTime and endTime
+#
+def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0;
+#
+# Uncomment canTrade variable below to include trading
+# only after a new high/low is made.
+#
+#def canTrade = SecondsFromTime(tradeTime) >= 0 and SecondsTillTime(endTime) > 0 and (lowBar >= startBar or highBar >= startBar);
+
+#
+# See which Gann level can be traded
+#
+def tradeG25 = canTrade and tradeGann25 and currentGHeight >= GHeight;
+def tradeG50 = canTrade and currentGHeight * 2 >= GHeight;
+def tradeG75 = canTrade and currentGHeight * 3 >= GHeight;
+
+#
+# Trade logic
+#
+# Conditions for trade:
+# 1) Be within trading hours (canTrade)
+# 2) See which Gann level can be traded (tradeG25, tradeG50, tradeG75)
+# 3) One of the Gann levels has been touched
+
+#
+# Check Gann level height and crossing
+#
+def tradeLongOK = trend == trend.up and ((tradeG25 and close crosses below G75) or (tradeG50 and close crosses below G50) or (tradeG75 and close crosses below G25));
+
+def tradeShortOK = trend == trend.down and ((tradeG25 and close crosses above G25) or (tradeG50 and close crosses above G50) or (tradeG75 and close crosses above G75));
+
+#
+# Open Long Order
+#
+def openLongCondition = showTrades and tradeLongOK;
+AddOrder(OrderType.BUY_TO_OPEN, openLongCondition, close, contracts, Color.GREEN, Color.GREEN);
+#
+# Open Short Order
+#
+def openShortCondition = showTrades and tradeShortOK;
+AddOrder(OrderType.SELL_TO_OPEN, openShortCondition, close, contracts, Color.RED, Color.RED);
+#
+# Close Long Order
+#
+def closeLongCondition = 
+    (close >= EntryPrice() + (tickProfit * tickSize) or
+    close <= EntryPrice() - (tickLoss * tickSize) or 
+    SecondsTillTime(endTime) == 0);
+AddOrder(OrderType.SELL_TO_CLOSE, closeLongCondition, close, contracts, Color.RED, Color.RED);
+#
+# Close Short Order
+#
+def closeShortCondition = 
+    (close <= EntryPrice() - (tickProfit * tickSize) or
+    close >= EntryPrice() + (tickLoss * tickSize) or 
+    SecondsTillTime(endTime) == 0);
+AddOrder(OrderType.BUY_TO_CLOSE, closeShortCondition, close, contracts, Color.RED, Color.RED);
+#
+# Show labels
+# These are labels for debugging.
+# Option to turn off through input parameters
+#
+AddLabel(yes, GetSymbol());
+AddLabel(yes, "1/4 Range: " + if isActive then AsText(currentGHeight) else "N/A", if isActive and currentGHeight >= GHeight then Color.GREEN else Color.RED);
+AddLabel(yes, "Trend: " + if isActive then if trend == trend.up then "Up" else if trend == trend.down then "Down" else "?" else "N/A", if isActive then if trend == trend.up then Color.GREEN else if trend == trend.down then Color.RED else Color.GRAY else Color.RED);
+AddLabel(yes, "Can Trade: " + (if tradeG25 then "G25," else "") + (if tradeG50 then "G50," else "") + (if tradeG75 then "G75" else "") + (if !(tradeG50 and tradeG75) then "No" else ""), if !tradeG25 and tradeG50 and tradeG75 then Color.YELLOW else if tradeG25 and tradeG50 and tradeG75 then Color.GREEN else Color.RED);
+AddLabel(showDebug, "Active: " + if isActive then "Yes" else "No", Color.CYAN);
+AddLabel(showDebug, "Low: " + Floor(activeLow) + "'" + (activeLow - Floor(activeLow)) / tickSize, Color.CYAN);
+AddLabel(showDebug, "High: " + Floor(activeHigh) + "'" + (activeHigh - Floor(activeHigh)) / tickSize, Color.CYAN);
+AddLabel(showDebug, "G25: " + Floor(G25) + "'" + RoundDown((G25 - Floor(G25)) / tickSize, 0), Color.CYAN);
+AddLabel(showDebug, "G50: " + Floor(G50) + "'" + RoundDown((G50 - Floor(G50)) / tickSize, 0), Color.CYAN);
+AddLabel(showDebug, "G75: " + Floor(G75) + "'" + RoundDown((G75 - Floor(G75)) / tickSize, 0), Color.CYAN);
+AddLabel(showDebug, "Start Bar: " + startBar, Color.CYAN);
+AddLabel(showDebug, "Low Bar: " + lowBar, Color.CYAN);
+AddLabel(showDebug, "High Bar: " + highBar, Color.CYAN);
+
+#
+# Plots
+#
+# Gann levels
+plot plotDailyLow = if showGann and isActive then activeLow else na;
+plot plotDailyHigh = if showGann and isActive then activeHigh else na;
+plot plotG75 = if showGann and isActive then G75 else na;
+plot plotG50 = if showGann and isActive then G50 else na;
+plot plotG25 = if showGann and isActive then G25 else na;
+
+# Fib levels
+plot plotFibLow = if showFibs and isActive then FibLow else na;
+plot plotFibHigh = if showFibs and isActive then FibHigh else na;
+
+# Set Colors
+plotDailyLow.SetDefaultColor(Color.YELLOW);
+plotDailyHigh.SetDefaultColor(Color.YELLOW);
+plotG75.SetDefaultColor(Color.CYAN);
+plotG50.SetDefaultColor(Color.CYAN);
+plotG25.SetDefaultColor(Color.CYAN);
+plotFibLow.SetDefaultColor(Color.GRAY);
+plotFibHigh.SetDefaultColor(Color.GRAY);
+
+# Set Line Widths
+plotDailyLow.SetLineWeight(2);
+plotDailyHigh.SetLineWeight(2);
+
+# Set Styles
+plotFibLow.SetStyle(Curve.SHORT_DASH);
+plotFibHigh.SetStyle(Curve.SHORT_DASH);
+
+# Vertical levels
+AddVerticalLine(showVLines and SecondsTillTime(0820) == 0 and SecondsFromTime(0820) == 0, "/ZB OPEN", Color.LIGHT_GRAY, Curve.LONG_DASH);
+#
+AddVerticalLine(showVLines and SecondsTillTime(0930) == 0 and SecondsFromTime(0930) == 0, "STKS OPEN", Color.LIGHT_GRAY, Curve.LONG_DASH);
+#
+AddVerticalLine(showVLines and SecondsTillTime(tradeTime) == 0 and SecondsFromTime(tradeTime) == 0, "START", Color.LIME, Curve.LONG_DASH);
+#
+AddVerticalLine(showVLines and SecondsTillTime(endTime) == 0 and SecondsFromTime(endTime) == 0, "END", Color.PINK, Curve.LONG_DASH);
+#
+AddVerticalLine(showVLines and SecondsTillTime(1500) == 0 and SecondsFromTime(1500) == 0, "/ZB CLOSE", Color.LIGHT_GRAY, Curve.LONG_DASH);
+#
+AddVerticalLine(showVLines and SecondsTillTime(1600) == 0 and SecondsFromTime(1600) == 0, "STKS CLOSE", Color.LIGHT_GRAY, Curve.LONG_DASH);
+
+#
+# Bar number labels
+# This label is to show corresponding bar number for every 5 bars on the chart
+# Useful for debugging lowBar and highBar, but not needed.
+# Option to turn off through input parameters
+#
+def interval = 5;
+def Every_Interval = interval - 1;
+plot bn = if showDebug and (barNumber - 1) % interval == 1 then barNumber else na;
+bn.SetPaintingStrategy(PaintingStrategy.VALUES_BELOW);
