@@ -9,6 +9,10 @@ To download, there are two options:<br><br>
 <b>AT_Churchill_Strategy_x.x.txt</b><br>
 Strategy based on concepts by Ken Churchill.  User inputs with options to adjust your trade times; number of contracts; number of ticks for profit/loss; adjust Gann height; display Gann, fib, and vertical event lines; trade the Gann 25 level; and debugging values in case you want to modify the code.<br><br>
 
+<b>AT_Sarago_Floor_Trader_Study.txt</b><br>
+Calculations are based on Floor Trader Pivots and Trend Trading - <i>Trend Trading for Dummies</i> by Barry Burns
+https://www.dummies.com/store/product/Trend-Trading-For-Dummies.productCd-1118871286.html<br><br>
+
 <b>AT_Sarago_VWAP_Study.txt</b><br>
 <i>Musings on VWAP</i> from Mark:
 <p>Some traders use VWAP as their primary indicator as it is used by large institutional bond buy-sell brokers to determine if they are selling/buying at a responsible bond price.  The big brokers want to buy bonds below the VWAP and to sell them above the VWAP.  When they do their clients are happy that a "good deal" has been made.</p>
