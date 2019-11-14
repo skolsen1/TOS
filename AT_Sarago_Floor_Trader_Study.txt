@@ -1,0 +1,36 @@
+# Find previous day's high/low range and produce the Trader's Range
+# Paint five lines - the central pivot, R1 & R2 (resistance), and S1 & S2 (support)
+
+def agg = AggregationPeriod.DAY; 
+
+def yesterdays_high  = high(period = agg)[1];
+def yesterdays_low   = low(period = agg)[1];
+def yesterdays_open  = open(period = agg)[1];
+def yesterdays_close = close(period = agg)[1];
+
+plot central_pivot = (yesterdays_high + yesterdays_low + yesterdays_close) / 3;
+     central_pivot.SetPaintingStrategy(PaintingStrategy.DASHES);
+     central_pivot.SetDefaultColor(Color.DARK_GRAY);
+     central_pivot.SetLineWeight(3);
+
+plot R1 = (2 * central_pivot) - yesterdays_low;
+     R1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+     R1.SetDefaultColor(Color.DARK_RED);
+     R1.SetLineWeight(2);
+
+plot R2 = central_pivot + (yesterdays_high - yesterdays_low);
+     R2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+     R2.SetDefaultColor(Color.DARK_GREEN);
+     R2.SetLineWeight(3);
+
+plot S1 =(2 * central_pivot) - yesterdays_high;
+     S1.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+     S1.SetDefaultColor(Color.DARK_RED);
+     S1.SetLineWeight(2);
+
+plot S2 = central_pivot - (yesterdays_high - yesterdays_low);
+     S2.SetPaintingStrategy(PaintingStrategy.HORIZONTAL);
+     S2.SetDefaultColor(Color.DARK_GREEN);
+     S2.SetLineWeight(3);
+
+##END
