@@ -10,7 +10,7 @@ To download, there are two options:<br><br>
 Strategy based on concepts by Ken Churchill.  User inputs with options to adjust your trade times; number of contracts; number of ticks for profit/loss; adjust Gann height; display Gann, fib, and vertical event lines; trade the Gann 25 level; and debugging values in case you want to modify the code.<br><br>
 
 <b>AT_Sarago_Floor_Trader_Study.txt</b><br>
-Calculations are based on <a href="https://www.dummies.com/personal-finance/investing/floor-trader-pivots-and-trend-trading/" target="_blank">Floor Trader Pivots and Trend Trading</a> - <i>Trend Trading for Dummies</i> by Barry Burns<br>
+Calculations are based on <a href="https://www.dummies.com/personal-finance/investing/floor-trader-pivots-and-trend-trading/"  target="_blank">Floor Trader Pivots and Trend Trading</a> - <i>Trend Trading for Dummies</i> by Barry Burns<br><br>
 
 <b>AT_Sarago_VWAP_Study.txt</b><br>
 <i>Musings on VWAP</i> from Mark:
