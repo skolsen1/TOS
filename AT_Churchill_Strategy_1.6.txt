@@ -168,7 +168,7 @@ AddOrder(OrderType.BUY_TO_CLOSE, closeShortCondition, close, contracts, Color.RE
 AddLabel(yes, GetSymbol());
 AddLabel(yes, "1/4 Range: " + if isActive then AsText(currentGHeight) else "N/A", if isActive and currentGHeight >= GHeight then Color.GREEN else Color.RED);
 AddLabel(yes, "Trend: " + if isActive then if trend == trend.up then "Up" else if trend == trend.down then "Down" else "?" else "N/A", if isActive then if trend == trend.up then Color.GREEN else if trend == trend.down then Color.RED else Color.GRAY else Color.RED);
-AddLabel(yes, "Can Trade: " + (if tradeG25 then "G25," else "") + (if tradeG50 then "G50," else "") + (if tradeG75 then "G75" else "") + (if !(tradeG50 and tradeG75) then "No" else ""), if !tradeG25 and tradeG50 and tradeG75 then Color.YELLOW else if tradeG25 and tradeG50 and tradeG75 then Color.GREEN else Color.RED);
+AddLabel(yes, "Can Trade: " + (if tradeG25 then "G25," else "") + (if tradeG50 then "G50," else "") + (if tradeG75 then "G75" else "") + (if !(tradeG50 or tradeG75) then "No" else ""), if !(tradeG25 or tradeG50 or tradeG75) then Color.RED else Color.GREEN);
 AddLabel(showDebug, "Active: " + if isActive then "Yes" else "No", Color.CYAN);
 AddLabel(showDebug, "Low: " + Floor(activeLow) + "'" + (activeLow - Floor(activeLow)) / tickSize, Color.CYAN);
 AddLabel(showDebug, "High: " + Floor(activeHigh) + "'" + (activeHigh - Floor(activeHigh)) / tickSize, Color.CYAN);
