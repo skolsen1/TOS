@@ -6,11 +6,12 @@ To download, there are two options:
   <li>Open an individual file: For scripts (.txt files), click the file name and then click the <b>Raw</b> button.  This will open a version that is clean of html and you can CTRL-A to select all and then copy and paste into TOS.  For other files such as PDF or Excel, click the <b>View raw</b> or <b>Download</b> links.</li>
 </ul>
 <hr>
+
 <b>AT_Churchill_Strategy_x.x.txt</b>
-Strategy based on concepts by Ken Churchill.  User inputs with options to adjust your trade times; number of contracts; number of ticks for profit/loss; adjust Gann height; display Gann, fib, and vertical event lines; trade the Gann 25 level; and debugging values in case you want to modify the code.
+<p>Strategy based on concepts by Ken Churchill.  User inputs with options to adjust your trade times; number of contracts; number of ticks for profit/loss; adjust Gann height; display Gann, fib, and vertical event lines; trade the Gann 25 level; and debugging values in case you want to modify the code.</p>
 
 <b>AT_Sarago_Floor_Trader_Study.txt</b>
-Calculations are based on <a href="https://www.dummies.com/personal-finance/investing/floor-trader-pivots-and-trend-trading/"  target="_blank">Floor Trader Pivots and Trend Trading</a> - <i>Trend Trading for Dummies</i> by Barry Burns
+<p>Calculations are based on <a href="https://www.dummies.com/personal-finance/investing/floor-trader-pivots-and-trend-trading/"  target="_blank">Floor Trader Pivots and Trend Trading</a> - <i>Trend Trading for Dummies</i> by Barry Burns</p>
 
 <b>AT_Sarago_VWAP_Study.txt</b>
 <i>Musings on VWAP</i> from Mark:
