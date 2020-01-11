@@ -1,0 +1,56 @@
+# AT_Verble_Basic_VWAP_Study
+# TD Ameritrade IP Company, Inc. (c) 2011-2019
+#
+# This is a stripped-down version of the TOS VWAP indicator without upper and lower bands.
+# The default setting is for NO averaging of the VWAP.  This can be changed with values of 'length' greater than one.
+# Green dashed line = Rising VWAP; Red dashed line = Falling VWAP
+# Label gives value of the VWAP with color green or red = price above or below VWAP
+# Aggregation Period can be DAY (default), WEEK, or MONTH
+# Hint: Recommend watching this video on how to interpret the VWAP:  https://www.youtube.com/watch?v=U0uftXzvUZU
+
+input length = 1;
+input ticSize = 32;
+input timeFrame = {default DAY, WEEK, MONTH};
+
+def cap = getAggregationPeriod();
+def errorInAggregation =
+    timeFrame == timeFrame.DAY and cap >= AggregationPeriod.WEEK or
+    timeFrame == timeFrame.WEEK and cap >= AggregationPeriod.MONTH;
+assert(!errorInAggregation, "timeFrame should be not less than current chart aggregation period");
+
+def yyyyMmDd = getYyyyMmDd();
+def periodIndx;
+switch (timeFrame) {
+case DAY:
+    periodIndx = yyyyMmDd;
+case WEEK:
+    periodIndx = Floor((daysFromDate(first(yyyyMmDd)) + getDayOfWeek(first(yyyyMmDd))) / 7);
+case MONTH:
+    periodIndx = roundDown(yyyyMmDd / 100, 0);
+}
+def isPeriodRolled = compoundValue(1, periodIndx != periodIndx[1], yes);
+
+def volumeSum;
+def volumeVwapSum;
+def volumeVwap2Sum;
+
+if (isPeriodRolled) {
+    volumeSum = volume;
+    volumeVwapSum = volume * vwap;
+    volumeVwap2Sum = volume * Sqr(vwap);
+} else {
+    volumeSum = compoundValue(1, volumeSum[1] + volume, volume);
+    volumeVwapSum = compoundValue(1, volumeVwapSum[1] + volume * vwap, volume * vwap);
+    volumeVwap2Sum = compoundValue(1, volumeVwap2Sum[1] + volume * Sqr(vwap), volume * Sqr(vwap));
+}
+# Define VWAP
+def price = volumeVwapSum / volumeSum;
+# Plot VWAP
+plot VWAP = Average(price, length);
+VWAP.SetPaintingStrategy(PaintingStrategy.LINE);
+VWAP.SetStyle(Curve.MEDIUM_DASH);
+VWAP.AssignValueColor(if VWAP > VWAP[1] then Color.green else Color. RED);
+VWAP.setLineWeight(3);
+# Add VWAP Label
+def Data = close;
+AddLabel(yes, "VWAP: " + Floor(VWAP) + "'" + (Floor(ticSize * ((VWAP))) - ticSize * Floor(VWAP)), if Data >= VWAP then color.green else color.red);
