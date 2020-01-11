@@ -23,6 +23,7 @@ To download, there are two options:
 <p>Like Bollinger bands, if price action walks the bands or moves to the extremes outside the bands, it suggests that price will reverse back to the mean.  It is also interesting that on most days, the price action in the final few hours before normal market close, price action tends to move toward the VWAP mean.</p>
 <p>As Larry correctly states, when price action is above the VWAP mean, you should emphasize an up-trend in your decisions, but when prices rise above the the VWAP's cloud top line you should expect a pull back that might be either slight or massive.  The reverse is also true for price action below the VWAP mean.</p>
 <p>I find that VWAP charts in TOS work best for intra-day activity, but it looks like the standard TOS study also facilitates calculating VWAP on daily, weekly, and monthly candles.</p>
+<p>(See VWAP video link at bottom of this page)</p>
 
 <b>AT_Verble_Auto_Gann_Levels_Study_1.1.txt</b>
 <p>Larry's auto generation of Gann levels</p>
@@ -45,5 +46,5 @@ To download, there are two options:
 <b>TOS & Thinkscript Collection.pdf</b>
 <p>An amazing collection of sample scripts that demonstrates what can be accomplished in ThinkorSwim.</p>
 
-<b>Video on how to interpret the VWAP</b>
+<b>VWAP</b>
 <p><a href="https://www.youtube.com/watch?v=U0uftXzvUZU" target="_blank">YouTube video on how to interpret the VWAP</a></p>
