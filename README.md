@@ -17,7 +17,7 @@ To download, there are two options:
 <p>Calculations are based on <a href="https://www.dummies.com/personal-finance/investing/floor-trader-pivots-and-trend-trading/"  target="_blank">Floor Trader Pivots and Trend Trading</a> - <i>Trend Trading for Dummies</i> by Barry Burns</p>
 
 <b>AT_Sarago_VWAP_Study.txt</b>
-<i>Musings on VWAP</i> from Mark:
+<p><i>Musings on VWAP from Mark</i></p>
 <p>Some traders use VWAP as their primary indicator as it is used by large institutional bond buy-sell brokers to determine if they are selling/buying at a responsible bond price.  The big brokers want to buy bonds below the VWAP and to sell them above the VWAP.  When they do their clients are happy that a "good deal" has been made.</p>
 <p>I use it as purely a confirmation indicator (not primary) or simply as a reference since it acts very much like Bollinger bands.  Note that it is a bit different from Bollinger bands, however, in that it has the added advantage of incorporating volume of contracts or shares traded into the calculation.  This is a great addition.</p>
 <p>Like Bollinger bands, if price action walks the bands or moves to the extremes outside the bands, it suggests that price will reverse back to the mean.  It is also interesting that on most days, the price action in the final few hours before normal market close, price action tends to move toward the VWAP mean.</p>
@@ -27,6 +27,9 @@ To download, there are two options:
 
 <b>AT_Verble_Auto_Gann_Levels_Study_1.1.txt</b>
 <p>Larry's auto generation of Gann levels</p>
+
+<b>AT_Verble_Basic_VWAP_Study.txt</b>
+<p>Stripped-down version of the TOS VWAP indicator without upper and lower bands</p>
 
 <b>AT_Verble_LinearRegStdDevChannel_Study.txt</b>
 <p>Modification of the TOS Std Dev Channel indicator</p>
