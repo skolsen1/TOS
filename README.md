@@ -1,6 +1,6 @@
 # TOS
 <h3><i>Area to share ThinkorSwim scripts</i></h3>
-To download, there are two options:<br><br>
+To download, there are two options:
 <ul>
   <li>Download all files: Click on the green <b>Clone or download</b> button and then click <b>Download ZIP</b>.  This will download all of the ThinkorSwim files and scripts listed here into a ZIP file which you can save on to your hard drive.</li>
   <li>Open an individual file: For scripts (.txt files), click the file name and then click the <b>Raw</b> button.  This will open a version that is clean of html and you can CTRL-A to select all and then copy and paste into TOS.  For other files such as PDF or Excel, click the <b>View raw</b> or <b>Download</b> links.</li>
