@@ -306,7 +306,7 @@ AddVerticalLine(showVLines and SecondsTillTime(1600) == 0 and SecondsFromTime(16
 #
 # Chart bubbles
 #
-def showChartBubble = SecondsTillTime(endTime) == period * 60 or (isActive and lastBarNumber == barNumber);
+def showChartBubble = showPivots and SecondsTillTime(endTime) == period * 60 or (isActive and lastBarNumber == barNumber);
 AddChartBubble(showChartBubble, S1, "S1", Color.GREEN, Yes);
 AddChartBubble(showChartBubble, S2, "S2", Color.GREEN, Yes);
 AddChartBubble(showChartBubble, S3, "S3", Color.GREEN, Yes);
