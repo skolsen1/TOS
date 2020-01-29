@@ -293,15 +293,15 @@ plotS1.SetStyle(Curve.SHORT_DASH);
 #
 AddVerticalLine(showVLines and SecondsTillTime(0820) == 0 and SecondsFromTime(0820) == 0, "/ZB OPEN", Color.LIGHT_GRAY, Curve.LONG_DASH);
 #
-AddVerticalLine(showVLines and SecondsTillTime(0930) == 0 and SecondsFromTime(0930) == 0, "STKS OPEN", Color.LIGHT_GRAY, Curve.LONG_DASH);
+AddVerticalLine(showVLines and SecondsTillTime(0930) == 0 and SecondsFromTime(0930) == 0, "STKS OPEN", Color.LIME, Curve.LONG_DASH);
 #
-AddVerticalLine(showVLines and SecondsTillTime(tradeTime) == 0 and SecondsFromTime(tradeTime) == 0, "START", Color.LIME, Curve.LONG_DASH);
+AddVerticalLine(showVLines and SecondsTillTime(tradeTime) == 0 and SecondsFromTime(tradeTime) == 0, "START", Color.YELLOW, Curve.LONG_DASH);
 #
-AddVerticalLine(showVLines and SecondsTillTime(endTime) == 0 and SecondsFromTime(endTime) == 0, "END", Color.PINK, Curve.LONG_DASH);
+AddVerticalLine(showVLines and SecondsTillTime(endTime) == 0 and SecondsFromTime(endTime) == 0, "END", Color.YELLOW, Curve.LONG_DASH);
 #
 AddVerticalLine(showVLines and SecondsTillTime(1500) == 0 and SecondsFromTime(1500) == 0, "/ZB CLOSE", Color.LIGHT_GRAY, Curve.LONG_DASH);
 #
-AddVerticalLine(showVLines and SecondsTillTime(1600) == 0 and SecondsFromTime(1600) == 0, "STKS CLOSE", Color.LIGHT_GRAY, Curve.LONG_DASH);
+AddVerticalLine(showVLines and SecondsTillTime(1600) == 0 and SecondsFromTime(1600) == 0, "STKS CLOSE", Color.LIME, Curve.LONG_DASH);
 
 #
 # Chart bubbles
